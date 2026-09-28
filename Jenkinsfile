@@ -10,17 +10,16 @@ pipeline {
         }
 
         stage('Test') {
-            steps {
-                echo '🧪 Ejecutando pruebas...'
-                // Levantamos un contenedor temporal en un puerto libre para testear
-                sh '''
-                    docker rm -f app-web-test || true
-                    docker run -d --name app-web-test -p 8082:3000 mi-app-web:${BUILD_NUMBER}
-                    sleep 5
-                    curl -f http://localhost:8082/health || (docker logs app-web-test && exit 1)
-                '''
-            }
-        }
+    steps {
+        echo '🧪 Ejecutando pruebas...'
+        sh '''
+            docker rm -f app-web-test || true
+            docker run -d --name app-web-test mi-app-web:${BUILD_NUMBER}
+            sleep 10
+            docker exec app-web-test wget -qO- http://localhost:3000 || (docker logs app-web-test && exit 1)
+        '''
+    }
+}
 
         stage('Deploy') {
             steps {

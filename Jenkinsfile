@@ -10,6 +10,7 @@ pipeline {
         }
 
         stage('Test') {
+ HEAD
     steps {
         echo '🧪 Ejecutando pruebas...'
         sh '''
@@ -20,6 +21,18 @@ pipeline {
         '''
     }
 }
+
+            steps {
+                echo '🧪 Ejecutando pruebas...'
+                sh '''
+                    docker rm -f app-web-test || true
+                    docker run -d --name app-web-test mi-app-web:${BUILD_NUMBER}
+                    sleep 10
+                    docker exec app-web-test curl -f http://localhost:3000/health || (docker logs app-web-test && exit 1)
+                '''
+            }
+        }
+ 55adb026b4071b98f454966024f98a1261f31b59
 
         stage('Deploy') {
             steps {

@@ -4,39 +4,26 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                echo '🔨 Construyendo imagen Docker...'
+                echo 'Construyendo imagen Docker...'
                 sh 'docker build -t mi-app-web:${BUILD_NUMBER} .'
             }
         }
 
         stage('Test') {
- HEAD
-    steps {
-        echo '🧪 Ejecutando pruebas...'
-        sh '''
-            docker rm -f app-web-test || true
-            docker run -d --name app-web-test mi-app-web:${BUILD_NUMBER}
-            sleep 10
-            docker exec app-web-test wget -qO- http://localhost:3000 || (docker logs app-web-test && exit 1)
-        '''
-    }
-}
-
             steps {
-                echo '🧪 Ejecutando pruebas...'
+                echo 'Ejecutando pruebas...'
                 sh '''
                     docker rm -f app-web-test || true
                     docker run -d --name app-web-test mi-app-web:${BUILD_NUMBER}
                     sleep 10
-                    docker exec app-web-test curl -f http://localhost:3000/health || (docker logs app-web-test && exit 1)
+                    docker exec app-web-test wget -qO- http://localhost:3000 || (docker logs app-web-test && exit 1)
                 '''
             }
         }
- 55adb026b4071b98f454966024f98a1261f31b59
 
         stage('Deploy') {
             steps {
-                echo '🚀 Desplegando aplicación...'
+                echo 'Desplegando aplicacion...'
                 sh '''
                     docker rm -f app-web || true
                     docker rm -f app-web-test || true
@@ -48,10 +35,10 @@ pipeline {
 
     post {
         success {
-            echo '✅ Pipeline completado exitosamente.'
+            echo 'Pipeline completado exitosamente.'
         }
         failure {
-            echo '❌ El pipeline falló. Revisar los logs.'
+            echo 'El pipeline fallo. Revisar los logs.'
         }
     }
 }
